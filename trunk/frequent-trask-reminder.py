@@ -155,7 +155,7 @@ def get_today():
 
 
 def create_empty_configuration_file(file_name):
-    """Creates a default empty file with today's date as starting day."""
+    """Creates the empty configuration file used to track tasks."""
     root = Element("frequent-task-reminder")
     
     # Create the configuration element.
