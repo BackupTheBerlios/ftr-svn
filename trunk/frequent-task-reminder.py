@@ -58,6 +58,9 @@ Commands:
         Marks task `x' (id or name) as dead.
     -w x, --work x
         Adds one work unit to the task id/name `x'.
+    -n x text, --note x text
+        Modifies the task id/name `x' to have the note `text'. If
+        there is no `text', the previous note will be erased.
 Options:
     -h, --help
         Print this help screen.
@@ -71,12 +74,14 @@ Options:
 You always have to provide an action to perform, but you can't
 specify more than one action at the same time. Usage examples:
 
- %s -lc
+ %s --list -c
  %s -a "Water the binary trees."
- %s -k 3
+ %s -kill 3
  %s -wc "Check http://gradha.sdf-eu.org/ for updates."
+ %s -n "Water the binary trees." That was a joke
+ %s --note 4
 """ % (HUMAN_VERSION, binary_name, binary_name, binary_name,
-        binary_name, binary_name)
+        binary_name, binary_name, binary_name, binary_name)
     sys.exit(exit_code)
 
 
@@ -94,16 +99,17 @@ def process_command_line(argv = None):
     usage_information.
 
     The returned tuple will contain the action of the user as a
-    string, the action parameter (could be None) and the parameter
+    string, the action parameter (could be None), the parameter
     critical, which is a boolean telling if completed tasks should
-    not be shown.
+    not be shown, and the parameter text.
     """
     import getopt
     if not argv:
         argv = sys.argv
  
-    short_list = "hvla:k:w:c"
-    long_list = ["help", "version", "list", "add", "kill", "work", "critical"]
+    short_list = "hvla:k:w:cn:"
+    long_list = ["help", "version", "list", "add=", "kill=", "work=",
+        "critical", "note="]
 
     try:
         opts, args = getopt.getopt(argv[1:], short_list, long_list)
@@ -111,9 +117,7 @@ def process_command_line(argv = None):
         print "Error processing command line: %s\n" % msg
         usage_information(4)
 
-    if len(args) > 0:
-        print "Unknown arguments: %s" % args
-        usage_information(3)
+    text = " ".join(args)
 
     def exit_if_action_is_defined(action):
         if action:
@@ -143,6 +147,9 @@ def process_command_line(argv = None):
         elif option in ("-w", "--work"):
             exit_if_action_is_defined(action)
             action, action_param = "work", value
+        elif option in ("-n", "--note"):
+            exit_if_action_is_defined(action)
+            action, action_param = "note", value
         elif option in ("-c", "--critical"):
             critical = 1
  
@@ -150,7 +157,7 @@ def process_command_line(argv = None):
         print "You have to specify at least one action."
         usage_information(1)
 
-    return (action, action_param, critical)
+    return (action, action_param, critical, text)
 
 
 def get_today():
@@ -230,6 +237,10 @@ def list_tasks(tree_root, critical):
         print "Work units done %d, remaining to be done %d" % (done,
             days + 1 - done)
 
+        note_node = node.find("note")
+        if note_node.text:
+            print "Note: `%s'" % note_node.text
+
 
 def add_task(tree_root, task_name):
     """Adds (stripped) task_name to the tree_root."""
@@ -246,6 +257,7 @@ def add_task(tree_root, task_name):
     SubElement(task, "id").text = "%d" % id_num
     SubElement(task, "name").text = task_name.strip()
     SubElement(task, "starting-day").text = get_today()
+    SubElement(task, "note").text = ""
 
 
 def highest_task_id(tree_root):
@@ -300,13 +312,20 @@ def add_work_unit_to_task(tree_root, task_name_or_id):
     work_unit.text = get_today()
 
 
-def main_process(action, action_param, critical):
+def modify_task_note(tree_root, task_name_or_id, text):
+    """Modifies the note field of a task."""
+
+    node = find_task(tree_root, task_name_or_id)
+    node.find("note").text = text
+    
+    
+def main_process(action, action_param, critical, text):
     """Does the main task of running the program.
 
-    Action is a string of: list, add, kill, work. action_param
+    Action is a string of: list, add, kill, work, note. action_param
     is the related parameter to the action. If critical is true,
     only actions that have pending work units will be displayed in
-    the output.
+    the output. text is the optional text used in the note command.
     """
     file_name = os.path.expanduser("~/.frequent-task-reminderrc")
     if not os.path.isfile(file_name):
@@ -326,9 +345,11 @@ def main_process(action, action_param, critical):
             kill_task(data, action_param)
         elif "work" == action:
             add_work_unit_to_task(data, action_param)
+        elif "note" == action:
+            modify_task_note(data, action_param, text)
         else:
-            assert "Unknown action '%s', params '%s'" % (action, action_param)
-            pass
+            print "Unknown action '%s', params '%s'" % (action, action_param)
+            sys.exit(4)
     except Lookup_error, msg:
         print msg
         sys.exit(5)
@@ -341,5 +362,5 @@ def main_process(action, action_param, critical):
         
 
 if __name__ == "__main__":
-    action, action_param, critical = process_command_line()
-    main_process(action, action_param, critical)
+    action, action_param, critical, text = process_command_line()
+    main_process(action, action_param, critical, text)
