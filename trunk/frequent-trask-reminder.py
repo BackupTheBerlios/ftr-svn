@@ -56,21 +56,14 @@ def find_units_done(tree_root):
     return dic
 
 
-def main():
-    """Entry point of the binary."""
-    file_name = os.path.expanduser("~/.frequent-task-reminderrc")
-    if not os.path.isfile(file_name):
-        create_empty_configuration_file(file_name)
-
-    # Read the file.
-    data = ElementTree(file = file_name)
-
+def list_tasks(tree_root):
+    """Lists all the tasks from an xml tree."""
     # Calculate the number of days used on each task.
-    units_done = find_units_done(data)
-
+    units_done = find_units_done(tree_root)
+    
     # Print how many tasks there are.
-    print "Tracking %d task(s)." % len(data.getiterator("task"))
-    for node in data.getiterator("task"):
+    print "Tracking %d task(s)." % len(tree_root.getiterator("task"))
+    for node in tree_root.getiterator("task"):
         print "---"
         id = node.find("id").text
         print "Task %s" % id
@@ -86,6 +79,18 @@ def main():
         print "Started on %s, %d days ago" % (date_in_string, days)
         print "Work units done %d, remaining to be done %d" % (done,
             days + 1 - done)
+
+
+def main():
+    """Entry point of the binary."""
+    file_name = os.path.expanduser("~/.frequent-task-reminderrc")
+    if not os.path.isfile(file_name):
+        create_empty_configuration_file(file_name)
+
+    # Read the file.
+    data = ElementTree(file = file_name)
+
+    list_tasks(data)
         
 
 if __name__ == "__main__":
