@@ -160,6 +160,9 @@ def create_empty_configuration_file(file_name):
     
     # Create the configuration element.
     SubElement(root, "configuration")
+
+    # Create the future container of tasks.
+    SubElement(root, "tasklist")
     
     # Finally write the xml file.
     ElementTree(root).write(file_name, encoding="latin1")
@@ -217,6 +220,31 @@ def list_tasks(tree_root, critical):
             days + 1 - done)
 
 
+def add_task(tree_root, task_name):
+    """Adds task_name to the tree_root."""
+
+    # Get a new task id, higher than all previous ones.
+    id_num = highest_task_id(tree_root) + 1
+    assert id_num >= 0
+
+    # Create the task.
+    tasklist = tree_root.find("tasklist")
+    task = SubElement(tasklist, "task")
+    SubElement(task, "id").text = "%d" % id_num
+    SubElement(task, "name").text = task_name
+    SubElement(task, "starting-day").text = get_today()
+
+
+def highest_task_id(tree_root):
+    """Returns a number with the highest task id or -1."""
+    highest = -1
+    # Find the highest task id we already have.
+    for node in tree_root.getiterator("task"):
+        highest = max(highest, int(node.find("id").text))
+
+    return highest
+
+
 def main_process(action, action_param, critical):
     """Does the main task of running the program.
 
@@ -245,6 +273,9 @@ def main_process(action, action_param, critical):
     else:
         assert "Unknown action '%s', params '%s'" % (action, action_param)
         pass
+
+    # Save the changes to the configuration file.
+    data.write(file_name)
 
     # After an action always show the results.
     list_tasks(data, critical)
