@@ -40,17 +40,38 @@ DAY_IN_SECONDS = float(24 * 60 * 60)
 
 def usage_information(exit_code = 0, binary_name = "frequent-task-reminder.py"):
     """Prints usage information and terminates execution."""
-    print """Usage: %s [-hv -i xxx -o xxx]
+    print """Frequent task reminder %s.
+Usage: %s command [options]
 
--h, --help
-   Print this help screen.
--v, --version
-   Print version number and exit.
+Commands:
+    -l, --list
+        List the tasks and their work units. Use this when you
+        don't want to add, kill or modify existing tasks.
+    -a x, --add x
+        Adds a new task with name `x', starting today.
+    -k x, --kill x
+        Marks task `x' (id or name) as dead.
+    -w x, --work x
+        Adds one work unit to the task id/name `x'.
+Options:
+    -h, --help
+        Print this help screen.
+    -v, --version
+        Print only version number and exit.
+    -c, --critical
+        Ignore in output tasks which have 0 or less work units
+        remaining. This can be used in all cases, since all commands
+        output a list of tracked tasks.
 
+You always have to provide an action to perform, but you can't
+specify more than one action at the same time. Usage examples:
 
-Usage examples:
- %s
-""" % (binary_name, binary_name)
+ %s -lc
+ %s -a "Water the binary trees."
+ %s -k 3
+ %s -wc "Check http://gradha.sdf-eu.org/ for updates."
+""" % (HUMAN_VERSION, binary_name, binary_name, binary_name,
+        binary_name, binary_name)
     sys.exit(exit_code)
 
 
