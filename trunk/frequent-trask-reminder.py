@@ -2,9 +2,11 @@
 # -*- mode:Python; tab-width: 4 -*-
 
 # Modules to be imported.
+from elementtree.ElementTree import Element
+from elementtree.ElementTree import ElementTree
+from elementtree.ElementTree import SubElement
 import os
 import time
-from elementtree.ElementTree import Element, ElementTree, SubElement
 
 
 # Some globals.
