@@ -283,6 +283,20 @@ def find_task(tree_root, task_name_or_id):
     raise Lookup_error("Task with id/name '%s' not found." % text)
 
     
+def add_work_unit_to_task(tree_root, task_name_or_id):
+    """Adds a work unit to the specified task."""
+
+    # Obtain the task id.
+    node = find_task(tree_root, task_name_or_id)
+    task_id = node.find("id").text
+
+    # Create a work-unit for the found task.
+    work_units = tree_root.find("work-unit-list")
+    work_unit = SubElement(work_units, "work-unit")
+    work_unit.set("id", task_id)
+    work_unit.text = get_today()
+
+
 def main_process(action, action_param, critical):
     """Does the main task of running the program.
 
