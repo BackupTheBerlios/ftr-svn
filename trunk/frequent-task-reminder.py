@@ -25,9 +25,15 @@ __credits__ = ""
 
 
 # Modules to be imported.
-from elementtree.ElementTree import Element
-from elementtree.ElementTree import ElementTree
-from elementtree.ElementTree import SubElement
+try:
+    from elementtree.ElementTree import Element
+    from elementtree.ElementTree import ElementTree
+    from elementtree.ElementTree import SubElement
+except ImportError:
+    print "Oooops! Couldn't import the elementtree python package."
+    print "You can download and install it from http://effbot.org/zone/element-index.htm"
+    print
+    raise
 import os
 import sys
 import time
