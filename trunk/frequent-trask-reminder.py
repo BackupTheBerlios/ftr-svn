@@ -164,10 +164,13 @@ def create_empty_configuration_file(file_name):
     root = Element("frequent-task-reminder")
     
     # Create the configuration element.
-    SubElement(root, "configuration")
+    SubElement(root, "configuration-list")
 
     # Create the future container of tasks.
-    SubElement(root, "tasklist")
+    SubElement(root, "task-list")
+
+    # Create the future container of work units.
+    SubElement(root, "work-unit-list")
     
     # Finally write the xml file.
     ElementTree(root).write(file_name, encoding="latin1")
@@ -235,7 +238,7 @@ def add_task(tree_root, task_name):
     # Todo: verify task name. Should be non empty and not numeric only."
 
     # Create the task.
-    tasklist = tree_root.find("tasklist")
+    tasklist = tree_root.find("task-list")
     task = SubElement(tasklist, "task")
     SubElement(task, "id").text = "%d" % id_num
     SubElement(task, "name").text = task_name.strip()
