@@ -3,3 +3,5 @@ frequencies other than single days.
 
 Send patch to elementtree to allow saving of XML file in human
 readable form.
+
+Be able to list killed task and maybe resurrect them.
