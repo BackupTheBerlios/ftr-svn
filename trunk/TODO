@@ -5,3 +5,5 @@ Send patch to elementtree to allow saving of XML file in human
 readable form.
 
 Be able to list killed task and maybe resurrect them.
+
+Don't allow registering work units for unactive tasks.
