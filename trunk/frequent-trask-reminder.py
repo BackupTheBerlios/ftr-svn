@@ -190,8 +190,12 @@ def find_units_done(tree_root):
     return dic
 
 
-def list_tasks(tree_root):
-    """Lists all the tasks from an xml tree."""
+def list_tasks(tree_root, critical):
+    """Lists all the tasks from an xml tree.
+
+    If critical is true, only tasks that have pending work units
+    will be listed.
+    """
     # Calculate the number of days used on each task.
     units_done = find_units_done(tree_root)
 
@@ -200,16 +204,20 @@ def list_tasks(tree_root):
     # Print how many tasks there are.
     print "Tracking %d task(s)." % len(tree_root.getiterator("task"))
     for node in tree_root.getiterator("task"):
-        print "---"
+        # Find out the number of work units done for the task.
         task_id = node.find("id").text
-        print "Task %s" % task_id
-        print "Name '%s'" % node.find("name").text
-        
         date_in_string = node.find("starting-day").text
         date_in_seconds = string_to_seconds(date_in_string)
         assert current_time > date_in_seconds
         days = int((current_time - date_in_seconds) / DAY_IN_SECONDS)
         done = units_done.get(task_id, 0)
+
+        if critical and days + 1 - done < 1:
+            continue
+        
+        print "---"
+        print "Task %s" % task_id
+        print "Name '%s'" % node.find("name").text
         
         print "Started on %s, %d days ago" % (date_in_string, days)
         print "Work units done %d, remaining to be done %d" % (done,
@@ -231,7 +239,22 @@ def main_process(action, action_param, critical):
     # Read the file.
     data = ElementTree(file = file_name)
 
-    list_tasks(data)
+    if "list" == action:
+        list_tasks(data, critical)
+        return
+
+    if "add" == action:
+        add_task(data, action_param)
+    elif "kill" == action:
+        kill_task(data, action_param)
+    elif "work" == action:
+        add_work_unit_to_task(data, action_param)
+    else:
+        assert "Unknown action '%s', params '%s'" % (action, action_param)
+        pass
+
+    # After an action always show the results.
+    list_tasks(data, critical)
         
 
 if __name__ == "__main__":
