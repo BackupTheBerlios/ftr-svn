@@ -205,9 +205,11 @@ def list_tasks(tree_root, critical):
 
     current_time = time.time()
     
-    # Print how many tasks there are.
-    print "Tracking %d task(s)." % len(tree_root.getiterator("task"))
     for node in tree_root.getiterator("task"):
+        # Don't print the task if it was killed.
+        if node.get("killed"):
+            continue
+            
         # Find out the number of work units done for the task.
         task_id = node.find("id").text
         date_in_string = node.find("starting-day").text
@@ -216,6 +218,7 @@ def list_tasks(tree_root, critical):
         days = int((current_time - date_in_seconds) / DAY_IN_SECONDS)
         done = units_done.get(task_id, 0)
 
+        # Don't show if the user doesn't want the details.
         if critical and days + 1 - done < 1:
             continue
         
