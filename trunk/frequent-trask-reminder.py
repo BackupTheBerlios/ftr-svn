@@ -43,7 +43,19 @@ def string_to_seconds(text_string):
     """Returns a string in format YYYY-MM-DD into seconds since epoch."""
     return time.mktime(time.strptime(text_string, "%Y-%m-%d"))
     
-    
+
+def find_units_done(tree_root):
+    """Returns a dictionary with the number of days spent on each
+    task. The keys of the dictionary are the tasks' id values,
+    which are stored as plain text."""
+    dic = {}
+    for node in tree_root.getiterator("work-unit"):
+        key = node.attrib["id"]
+        days_so_far = dic.get(key, 0)
+        dic[key] = days_so_far + 1
+    return dic
+
+
 def main():
     """Entry point of the binary."""
     file_name = os.path.expanduser("~/.frequent-task-reminderrc")
@@ -53,19 +65,27 @@ def main():
     # Read the file.
     data = ElementTree(file = file_name)
 
+    # Calculate the number of days used on each task.
+    units_done = find_units_done(data)
+
     # Print how many tasks there are.
     print "Tracking %d task(s)." % len(data.getiterator("task"))
     for node in data.getiterator("task"):
         print "---"
-        print "Task '%s'" % node.find("name").text
+        id = node.find("id").text
+        print "Task %s" % id
+        print "Name '%s'" % node.find("name").text
         
         date_in_string = node.find("starting-day").text
         date_in_seconds = string_to_seconds(date_in_string)
         current = time.time()
         assert current > date_in_seconds
         days = int((current - date_in_seconds) / DAY_IN_SECONDS)
+        done = units_done.get(id, 0)
         
         print "Started on %s, %d days ago" % (date_in_string, days)
+        print "Work units done %d, remaining to be done %d" % (done,
+            days + 1 - done)
         
 
 if __name__ == "__main__":
