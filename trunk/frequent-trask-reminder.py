@@ -161,13 +161,6 @@ def create_empty_configuration_file(file_name):
     # Create the configuration element.
     SubElement(root, "configuration")
     
-    # Create a default empty task.
-    tasklist = SubElement(root, "tasklist")
-    task = SubElement(tasklist, "task")
-    SubElement(task, "id").text = "0"
-    SubElement(task, "name").text = "Default name"
-    SubElement(task, "starting-day").text = get_today()
-    
     # Finally write the xml file.
     ElementTree(root).write(file_name, encoding="latin1")
     print "Created empty configuration file '%s'." % file_name
