@@ -234,18 +234,21 @@ def list_tasks(tree_root, critical):
         # Don't show if the user doesn't want the details.
         if critical and days + 1 - done < 1:
             continue
-        
+
         print "---"
-        print "Task %s" % task_id
-        print "Name '%s'" % node.find("name").text
-        
-        print "Started on %s, %d days ago" % (date_in_string, days)
-        print "Work units done %d, remaining to be done %d" % (done,
-            days + 1 - done)
+        line = "Task %s" % task_id
+        line = line + " " * (15 - len(line))
+        print line, node.find("name").text
+        #print "Started on %s, %d days ago" % (date_in_string, days)
+        line = "Remaining %d" % (days + 1 - done)
+        line = line + " " * (15 - len(line))
+        print line,
 
         note_node = node.find("note")
         if note_node.text:
             print "Note: `%s'" % note_node.text
+        else:
+            print
 
 
 def add_task(tree_root, task_name):
