@@ -76,41 +76,76 @@ specify more than one action at the same time. Usage examples:
 
 
 def process_command_line(argv = None):
-   """Extracts from argv the options and returns them in a tuple.
+    """Extracts from argv the options and returns them in a tuple.
+ 
+    This function is a command line wrapper against main_process,
+    it returns a tuple which you can `apply' calling main_process. If
+    something in the command line is missing, the program will exit
+    with a hopefully helpfull message.
+ 
+    args should be a list with the full command line. If it is None
+    or empty, the arguments will be extracted from sys.argv. The
+    correct format of the accepted command line is documented by
+    usage_information.
 
-   Errrfff... update this to something usefull...
+    The returned tuple will contain the action of the user as a
+    string, the action parameter (could be None) and the parameter
+    critical, which is a boolean telling if completed tasks should
+    not be shown.
+    """
+    import getopt
+    if not argv:
+        argv = sys.argv
+ 
+    short_list = "hvla:k:w:c"
+    long_list = ["help", "version", "list", "add", "kill", "work", "critical"]
 
-   This function is a command line wrapper against main_process,
-   it returns a tuple which you can `apply' calling main_process. If
-   something in the command line is missing, the program will exit
-   with a hopefully helpfull message.
+    try:
+        opts, args = getopt.getopt(argv[1:], short_list, long_list)
+    except getopt.error, msg:
+        print "Error processing command line: %s\n" % msg
+        usage_information(4)
 
-   args should be a list with the full command line. If it is None
-   or empty, the arguments will be extracted from sys.argv. The
-   correct format of the accepted command line is documented by
-   usage_information.
-   """
-   import getopt
-   if not argv:
-      argv = sys.argv
+    if len(args) > 0:
+        print "Unknown arguments: %s" % args
+        usage_information(3)
 
-   short_list = "hv"
-   long_list = ["help", "version"]
+    def exit_if_action_is_defined(action):
+        if action:
+            print "You can't specify more than one action at a time."
+            usage_information(2)
+ 
+    # Default values
+    action = None
+    action_param = None
+    critical = 0
+    
+    for option, value in opts:
+        if option in ("-h", "--help"):
+            usage_information()
+        elif option in ("-v", "--version"):
+            print HUMAN_VERSION
+            sys.exit(0)
+        elif option in ("-l", "--list"):
+            exit_if_action_is_defined(action)
+            action, action_param = "list", None
+        elif option in ("-a", "--add"):
+            exit_if_action_is_defined(action)
+            action, action_param = "add", value
+        elif option in ("-k", "--kill"):
+            exit_if_action_is_defined(action)
+            action, action_param = "kill", value
+        elif option in ("-w", "--work"):
+            exit_if_action_is_defined(action)
+            action, action_param = "work", value
+        elif option in ("-c", "--critical"):
+            critical = 1
+ 
+    if not action:
+        print "You have to specify at least one action."
+        usage_information(1)
 
-   try:
-      opts, args = getopt.getopt(argv[1:], short_list, long_list)
-   except getopt.error, msg:
-      print "Error processing command line: %s\n" % msg
-      usage_information(2)
-
-   for option, value in opts:
-      if option in ("-h", "--help"):
-         usage_information()
-      elif option in ("-v", "--version"):
-         print HUMAN_VERSION
-         sys.exit(0)
-
-   return None
+    return (action, action_param, critical)
 
 
 def get_today():
@@ -181,8 +216,14 @@ def list_tasks(tree_root):
             days + 1 - done)
 
 
-def main_process():
-    """Does the main task of running the program."""
+def main_process(action, action_param, critical):
+    """Does the main task of running the program.
+
+    Action is a string of: list, add, kill, work. action_param
+    is the related parameter to the action. If critical is true,
+    only actions that have pending work units will be displayed in
+    the output.
+    """
     file_name = os.path.expanduser("~/.frequent-task-reminderrc")
     if not os.path.isfile(file_name):
         create_empty_configuration_file(file_name)
@@ -194,5 +235,5 @@ def main_process():
         
 
 if __name__ == "__main__":
-    process_command_line()
-    main_process()
+    action, action_param, critical = process_command_line()
+    main_process(action, action_param, critical)
