@@ -38,6 +38,11 @@ HUMAN_VERSION = "0.1.0"
 DAY_IN_SECONDS = float(24 * 60 * 60)
 
 
+# Exception hierarchy.
+class Error(Exception): pass
+class Lookup_error(Error): pass
+
+
 def usage_information(exit_code = 0, binary_name = "frequent-task-reminder.py"):
     """Prints usage information and terminates execution."""
     print """Frequent task reminder %s.
@@ -180,7 +185,7 @@ def find_units_done(tree_root):
     which are stored as plain text."""
     dic = {}
     for node in tree_root.getiterator("work-unit"):
-        key = node.attrib["id"]
+        key = node.get("id")
         days_so_far = dic.get(key, 0)
         dic[key] = days_so_far + 1
     return dic
@@ -221,17 +226,19 @@ def list_tasks(tree_root, critical):
 
 
 def add_task(tree_root, task_name):
-    """Adds task_name to the tree_root."""
+    """Adds (stripped) task_name to the tree_root."""
 
     # Get a new task id, higher than all previous ones.
     id_num = highest_task_id(tree_root) + 1
     assert id_num >= 0
 
+    # Todo: verify task name. Should be non empty and not numeric only."
+
     # Create the task.
     tasklist = tree_root.find("tasklist")
     task = SubElement(tasklist, "task")
     SubElement(task, "id").text = "%d" % id_num
-    SubElement(task, "name").text = task_name
+    SubElement(task, "name").text = task_name.strip()
     SubElement(task, "starting-day").text = get_today()
 
 
@@ -245,6 +252,34 @@ def highest_task_id(tree_root):
     return highest
 
 
+def kill_task(tree_root, task_name_or_id):
+    """Marks the specified task as killed."""
+
+    node = find_task(tree_root, task_name_or_id)
+    node.set("killed", "yes")
+
+
+def find_task(tree_root, task_name_or_id):
+    """Returns the node of the task, specified as name or id.
+
+    If the task is not found, raises Lookup_error.
+    """
+    # Try to convert the given parameter to a number.
+    text = task_name_or_id.strip()
+    try:
+        number = int(text)
+        for node in tree_root.getiterator("task"):
+            if int(node.find("id").text) == number:
+                return node
+    except ValueError:
+        # Failed. In that case try with a name.
+        for node in tree_root.getiterator("task"):
+            if node.find("name").text == text:
+                return node
+
+    raise Lookup_error("Task with id/name '%s' not found." % text)
+
+    
 def main_process(action, action_param, critical):
     """Does the main task of running the program.
 
@@ -264,15 +299,19 @@ def main_process(action, action_param, critical):
         list_tasks(data, critical)
         return
 
-    if "add" == action:
-        add_task(data, action_param)
-    elif "kill" == action:
-        kill_task(data, action_param)
-    elif "work" == action:
-        add_work_unit_to_task(data, action_param)
-    else:
-        assert "Unknown action '%s', params '%s'" % (action, action_param)
-        pass
+    try:
+        if "add" == action:
+            add_task(data, action_param)
+        elif "kill" == action:
+            kill_task(data, action_param)
+        elif "work" == action:
+            add_work_unit_to_task(data, action_param)
+        else:
+            assert "Unknown action '%s', params '%s'" % (action, action_param)
+            pass
+    except Lookup_error, msg:
+        print msg
+        sys.exit(5)
 
     # Save the changes to the configuration file.
     data.write(file_name)
