@@ -196,6 +196,11 @@ def string_to_seconds(text_string):
     return time.mktime(time.strptime(text_string, "%Y-%m-%d"))
     
 
+def seconds_to_string(seconds):
+    """Returns a YYYY-MM-DD string for the specified seconds since epoch."""
+    return time.strftime("%Y-%m-%d", time.gmtime(seconds))
+    
+    
 def find_units_done(tree_root):
     """Returns a dictionary with the number of days spent on each
     task. The keys of the dictionary are the tasks' id values,
@@ -226,10 +231,7 @@ def list_tasks(tree_root, critical):
             
         # Find out the number of work units done for the task.
         task_id = node.find("id").text
-        date_in_string = node.find("starting-day").text
-        date_in_seconds = string_to_seconds(date_in_string)
-        assert current_time > date_in_seconds
-        days = int((current_time - date_in_seconds) / DAY_IN_SECONDS)
+        days = get_task_age(node, current_time)
         done = units_done.get(task_id, 0)
 
         # Don't show if the user doesn't want the details.
@@ -268,6 +270,7 @@ def add_task(tree_root, task_name):
     SubElement(task, "name").text = task_name.strip()
     SubElement(task, "starting-day").text = get_today()
     SubElement(task, "note").text = ""
+    SubElement(task, "keep-unneeded-history").text = "no"
 
 
 def highest_task_id(tree_root):
@@ -339,6 +342,68 @@ def modify_task_note(tree_root, task_name_or_id, text):
     node = find_task(tree_root, task_name_or_id)
     node.find("note").text = text
     
+
+def purge_unneeded_work_units(tree_root):
+    """Looks at all the unneeded work units of all tasks. If no
+    configuration variable is set saying otherwise, they will be
+    purged to reduce the size of the saved file."""
+    # Calculate the number of days used on each task.
+    units_done = find_units_done(tree_root)
+
+    current_time = time.time()
+    
+    for node in tree_root.getiterator("task"):
+        # Don't print the task if it was killed.
+        if node.get("killed"):
+            continue
+            
+        # Find out the number of work units done for the task.
+        task_id = node.find("id").text
+        days = get_task_age(node, current_time)
+        done = units_done.get(task_id, 0)
+
+        # Don't show if the user doesn't want the details.
+        if days + 1 - done != 0:
+            continue
+
+        # Move the start time of the task forward.
+        advance_task_starting_date(node, days)
+
+        # Remove all working units for this task.
+        working_units = tree_root.find("work-unit-list")
+        for unit in tree_root.getiterator("work-unit"):
+            if unit.get("id") == task_id:
+                working_units.remove(unit)
+        
+
+def advance_task_starting_date(task_node, days):
+    """Moves the value of the starting date n days forward in time.
+
+    The task's starting date will be increased in the specified
+    number of days.
+    """
+    assert days > 0
+
+    date = task_node.find("starting-day")
+    date_in_string = date.text
+    date_in_seconds = string_to_seconds(date_in_string)
+    # WARNING: Why a +2? Why do I need an offset of 12 hours?
+    date_in_seconds += DAY_IN_SECONDS * (days + 2) + 60 * 60 * 12
+    date.text = seconds_to_string(date_in_seconds)
+    
+        
+def get_task_age(task_node, current_time):
+    """Returns the number of days between start and current time.
+
+    The function looks up the starting-day value of the task and
+    with the current time as returned by time.time() calculates
+    the number of days that have elapsed since its beginning.
+    """
+    date_in_string = task_node.find("starting-day").text
+    date_in_seconds = string_to_seconds(date_in_string)
+    days = int((current_time - date_in_seconds) / DAY_IN_SECONDS)
+    return days
+
     
 def main_process(action, action_param, critical, text):
     """Does the main task of running the program.
@@ -377,6 +442,8 @@ def main_process(action, action_param, critical, text):
     except Active_error, msg:
         print msg
         sys.exit(6)
+
+    purge_unneeded_work_units(data)
 
     # Save the changes to the configuration file.
     data.write(file_name)
