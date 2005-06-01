@@ -1,5 +1,3 @@
-You can add work units to invalid tasks!
-
 Add frequency attribute to task, to be allow to specify work unit
 frequencies other than single days.
 
@@ -7,5 +5,3 @@ Send patch to elementtree to allow saving of XML file in human
 readable form.
 
 Be able to list killed task and maybe resurrect them.
-
-Don't allow registering work units for unactive tasks.

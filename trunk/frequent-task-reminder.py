@@ -47,6 +47,7 @@ DAY_IN_SECONDS = float(24 * 60 * 60)
 # Exception hierarchy.
 class Error(Exception): pass
 class Lookup_error(Error): pass
+class Active_error(Error): pass
 
 
 def usage_information(exit_code = 0, binary_name = "frequent-task-reminder.py"):
@@ -280,9 +281,14 @@ def highest_task_id(tree_root):
 
 
 def kill_task(tree_root, task_name_or_id):
-    """Marks the specified task as killed."""
+    """Marks the specified task as killed. If the task was already
+    killed, Active_error is thrown."""
 
     node = find_task(tree_root, task_name_or_id)
+    if node.get("killed") == "yes":
+        raise Active_error("Task %s is dead, aborting "
+            "operation." % task_name_or_id)
+
     node.set("killed", "yes")
 
 
@@ -308,11 +314,17 @@ def find_task(tree_root, task_name_or_id):
 
     
 def add_work_unit_to_task(tree_root, task_name_or_id):
-    """Adds a work unit to the specified task."""
+    """Adds a work unit to the specified task. If the task is not
+    active, the operation throws Active_error."""
 
     # Obtain the task id.
     node = find_task(tree_root, task_name_or_id)
     task_id = node.find("id").text
+
+    # If the task is killed, report it.
+    if node.get("killed") == "yes":
+        raise Active_error("Task %s is dead, aborting "
+            "operation." % task_name_or_id)
 
     # Create a work-unit for the found task.
     work_units = tree_root.find("work-unit-list")
@@ -362,6 +374,9 @@ def main_process(action, action_param, critical, text):
     except Lookup_error, msg:
         print msg
         sys.exit(5)
+    except Active_error, msg:
+        print msg
+        sys.exit(6)
 
     # Save the changes to the configuration file.
     data.write(file_name)
