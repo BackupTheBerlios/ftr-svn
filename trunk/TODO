@@ -1,3 +1,5 @@
+You can add work units to invalid tasks!
+
 Add frequency attribute to task, to be allow to specify work unit
 frequencies other than single days.
 
