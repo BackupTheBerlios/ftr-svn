@@ -363,11 +363,11 @@ def purge_unneeded_work_units(tree_root):
         done = units_done.get(task_id, 0)
 
         # Don't show if the user doesn't want the details.
-        if days + 1 - done != 0:
+        if done < 1 or days + 1 - done != 0:
             continue
 
         # Move the start time of the task forward.
-        advance_task_starting_date(node, days)
+        advance_task_starting_date(node, done + 1)
 
         # Remove all working units for this task.
         working_units = tree_root.find("work-unit-list")
@@ -387,8 +387,7 @@ def advance_task_starting_date(task_node, days):
     date = task_node.find("starting-day")
     date_in_string = date.text
     date_in_seconds = string_to_seconds(date_in_string)
-    # WARNING: Why a +2? Why do I need an offset of 12 hours?
-    date_in_seconds += DAY_IN_SECONDS * (days + 2) + 60 * 60 * 12
+    date_in_seconds += DAY_IN_SECONDS * days + 60 * 60 * 12
     date.text = seconds_to_string(date_in_seconds)
     
         
