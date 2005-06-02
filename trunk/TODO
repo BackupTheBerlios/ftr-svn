@@ -1,3 +1,5 @@
+Add verbose or debug option.
+
 Add -C config_file switch. This will allow creating a unit test
 for adding/removing operations and stuff.
 
