@@ -367,7 +367,7 @@ def purge_unneeded_work_units(tree_root):
             continue
 
         # Move the start time of the task forward.
-        advance_task_starting_date(node, done + 1)
+        advance_task_starting_date(node, done)
 
         # Remove all working units for this task.
         working_units = tree_root.find("work-unit-list")
