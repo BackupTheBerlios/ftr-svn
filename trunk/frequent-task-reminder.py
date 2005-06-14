@@ -35,6 +35,7 @@ except ImportError:
     print
     raise
 import os
+import StringIO
 import sys
 import time
 
@@ -48,6 +49,42 @@ DAY_IN_SECONDS = float(24 * 60 * 60)
 class Error(Exception): pass
 class Lookup_error(Error): pass
 class Active_error(Error): pass
+
+
+class Pretty_xml(StringIO.StringIO):
+    """Wrapper to save XML files with human readable formatting.
+
+    This little class wraps around a StringIO. ElementTree uses
+    this class for saving, which will store the XML file as a string
+    and then reformat it before storing it on disk.
+    """
+    def __init__(self, file_name):
+        """Creates a memory StringIO for writting into filename."""
+        self.file_name = file_name
+        StringIO.StringIO.__init__(self)
+
+    def close(self):
+        """Saves the string to a file and releases the memory.
+
+        TODO: Efficient regular expression substitution. This is ugly.
+        """
+        full_string = self.getvalue()
+        StringIO.StringIO.close(self)
+        full_string = full_string.replace("frequent-task-reminder>", "frequent-task-reminder>\n")
+        full_string = full_string.replace("<configuration-list />", " <configuration-list />\n")
+        full_string = full_string.replace("<task-list>", "  <task-list>\n")
+        full_string = full_string.replace("<task ", "   <task ")
+        full_string = full_string.replace("><id", ">\n   <id")
+        full_string = full_string.replace("><name", ">\n   <name")
+        full_string = full_string.replace("><starting-day", ">\n   <starting-day")
+        full_string = full_string.replace("><note", ">\n   <note")
+        full_string = full_string.replace("></task>", ">\n  </task>\n")
+        full_string = full_string.replace("><work-unit-list>", ">\n <work-unit-list>")
+        full_string = full_string.replace("/work-unit>", "/work-unit>")
+        full_string = full_string.replace("<work-unit", "\n  <work-unit")
+        output_file = open(self.file_name, "wt")
+        output_file.write(full_string)
+        output_file.close()
 
 
 def usage_information(exit_code = 0, binary_name = "frequent-task-reminder.py"):
@@ -445,7 +482,9 @@ def main_process(action, action_param, critical, text):
     purge_unneeded_work_units(data)
 
     # Save the changes to the configuration file.
-    data.write(file_name)
+    saver = Pretty_xml(file_name)
+    data.write(saver)
+    saver.close()
 
     # After an action always show the results.
     list_tasks(data, critical)
