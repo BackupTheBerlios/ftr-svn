@@ -1,0 +1,15 @@
+Add verbose or debug option.
+
+Add -C config_file switch. This will allow creating a unit test
+for adding/removing operations and stuff.
+
+Add frequency attribute to task, to be allow to specify work unit
+frequencies other than single days.
+
+Send patch to elementtree to allow saving of XML file in human
+readable form.
+
+Be able to list killed task and maybe resurrect them.
+
+Review date calculations. Something wrong with locales and bad
+thing requiring a 12h offset for some operations to work.
