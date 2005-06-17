@@ -265,7 +265,7 @@ def list_tasks(tree_root, critical):
         line = "Task %s" % task_id
         line = line + " " * (15 - len(line))
         print line, node.find("name").text
-        line = "Remaining work units: %d" % (to_do - done)
+        line = "Remaining %d" % (to_do - done)
         line = line + " " * (15 - len(line))
         print line,
 
