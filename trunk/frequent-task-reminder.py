@@ -18,7 +18,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 """
 
 __author__ = "Grzegorz Adam Hankiewicz"
-__date__ = "$Date$"
+__date__ =  "$Date$"
 __version__ = "$Rev$"
 __email__ = "gradha@users.sourceforge.net"
 __credits__ = ""
