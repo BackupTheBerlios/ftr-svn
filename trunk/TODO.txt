@@ -18,3 +18,5 @@ thing requiring a 12h offset for some operations to work.
 Document for command line users.
 
 Try to modularise and provide independant text and GUI interfaces.
+
+Revision 46 of source code breaks Setedit's python parser.
