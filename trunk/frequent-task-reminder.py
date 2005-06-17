@@ -357,7 +357,7 @@ def add_work_unit_to_task(tree_root, task_name_or_id):
     # Don't forget about the amount value, which works like positive days.
     amount = int(last_unit_node.get("amount"))
     if amount > 0:
-        seconds += 1 + amount * DAY_IN_SECONDS
+        seconds += (1 + amount) * DAY_IN_SECONDS
     else:
         seconds += DAY_IN_SECONDS
         
