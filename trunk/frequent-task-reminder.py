@@ -242,27 +242,12 @@ def seconds_to_string(seconds):
     return time.strftime("%Y-%m-%d", time.gmtime(seconds))
     
     
-def find_units_done(tree_root):
-    """Returns a dictionary with the number of days spent on each
-    task. The keys of the dictionary are the tasks' id values,
-    which are stored as plain text."""
-    dic = {}
-    for node in tree_root.getiterator("work-unit"):
-        key = node.get("id")
-        days_so_far = dic.get(key, 0)
-        dic[key] = days_so_far + 1
-    return dic
-
-
 def list_tasks(tree_root, critical):
     """Lists all the tasks from an xml tree.
 
     If critical is true, only tasks that have pending work units
     will be listed.
     """
-    # Calculate the number of days used on each task.
-    units_done = find_units_done(tree_root)
-
     current_time = time.time()
     
     for node in tree_root.getiterator("task"):
@@ -272,19 +257,18 @@ def list_tasks(tree_root, critical):
             
         # Find out the number of work units done for the task.
         task_id = node.find("id").text
-        days = get_task_age(node, current_time)
-        done = units_done.get(task_id, 0)
+        to_do = get_task_age(node, current_time)
+        done = get_task_units_done(node)
 
         # Don't show if the user doesn't want the details.
-        if critical and days + 1 - done < 1:
+        if critical and to_do - done < 1:
             continue
 
         print "---"
         line = "Task %s" % task_id
         line = line + " " * (15 - len(line))
         print line, node.find("name").text
-        #print "Started on %s, %d days ago" % (date_in_string, days)
-        line = "Remaining %d" % (days + 1 - done)
+        line = "Remaining work units: %d" % (to_do - done)
         line = line + " " * (15 - len(line))
         print line,
 
@@ -410,18 +394,43 @@ def advance_task_starting_date(task_node, days):
     
         
 def get_task_age(task_node, current_time):
-    """Returns the number of days between start and current time.
+    """f(task_node, current_time) -> work_units_to_do
 
-    The function looks up the starting-day value of the task and
-    with the current time as returned by time.time() calculates
-    the number of days that have elapsed since its beginning.
+    Returns the number of pending work units to be done for the
+    specified tasks.  The number is calculated counting the number
+    of days from starting-day to current_time.  When the starting-day
+    task value and the current_time parameter are `in the same day',
+    this function returns 1, assuming today's work unit has not
+    been cleared yet.
     """
     date_in_string = task_node.find("starting-day").text
     date_in_seconds = string_to_seconds(date_in_string)
-    days = int((current_time - date_in_seconds) / DAY_IN_SECONDS)
-    return days
+    # Now convert current_time to a YYYY-MM-DD.
+    now = string_to_seconds(seconds_to_string(current_time))
+    days = int((now - date_in_seconds) / DAY_IN_SECONDS)
+    return 1 + days
 
     
+def get_task_units_done(task_node):
+    """f(task_node) -> work_units_done_so_far
+
+    Returns the number of work units done since starting-day using
+    the values of last-unit as reference.
+    """
+    # Get seconds of starting day.
+    start = string_to_seconds(task_node.find("starting-day").text)
+    
+    # Convert the last-unit date into seconds.
+    last_unit_node = task_node.find("last-unit")
+    seconds = string_to_seconds(last_unit_node.text)
+    # Don't forget about the amount value, which works like positive days.
+    amount = int(last_unit_node.get("amount"))
+    if amount > 0:
+        seconds += amount * DAY_IN_SECONDS
+
+    return int((seconds - start) / DAY_IN_SECONDS)
+    
+
 def main_process(action, action_param, critical, text):
     """Does the main task of running the program.
 
