@@ -7,9 +7,14 @@ Add frequency attribute to task, to be allow to specify work unit
 frequencies other than single days.
 
 Send patch to elementtree to allow saving of XML file in human
-readable form.
+readable form (hmmm... not so good idea, better keep the patch
+"local").
 
 Be able to list killed task and maybe resurrect them.
 
 Review date calculations. Something wrong with locales and bad
 thing requiring a 12h offset for some operations to work.
+
+Document for command line users.
+
+Try to modularise and provide independant text and GUI interfaces.
