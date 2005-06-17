@@ -41,7 +41,7 @@ import time
 
 
 # Some globals.
-HUMAN_VERSION = "0.1.0"
+HUMAN_VERSION = "0.1.1"
 DAY_IN_SECONDS = float(24 * 60 * 60)
 
 
