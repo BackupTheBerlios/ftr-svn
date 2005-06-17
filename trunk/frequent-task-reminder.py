@@ -394,39 +394,6 @@ def modify_task_note(tree_root, task_name_or_id, text):
     node.find("note").text = text
     
 
-def purge_unneeded_work_units(tree_root):
-    """Looks at all the unneeded work units of all tasks. If no
-    configuration variable is set saying otherwise, they will be
-    purged to reduce the size of the saved file."""
-    # Calculate the number of days used on each task.
-    units_done = find_units_done(tree_root)
-
-    current_time = time.time()
-    
-    for node in tree_root.getiterator("task"):
-        # Don't print the task if it was killed.
-        if node.get("killed"):
-            continue
-            
-        # Find out the number of work units done for the task.
-        task_id = node.find("id").text
-        days = get_task_age(node, current_time)
-        done = units_done.get(task_id, 0)
-
-        # Don't show if the user doesn't want the details.
-        if done < 1 or days + 1 - done != 0:
-            continue
-
-        # Move the start time of the task forward.
-        advance_task_starting_date(node, done)
-
-        # Remove all working units for this task.
-        working_units = tree_root.find("work-unit-list")
-        for unit in tree_root.getiterator("work-unit"):
-            if unit.get("id") == task_id:
-                working_units.remove(unit)
-        
-
 def advance_task_starting_date(task_node, days):
     """Moves the value of the starting date n days forward in time.
 
@@ -492,8 +459,6 @@ def main_process(action, action_param, critical, text):
     except Active_error, msg:
         print msg
         sys.exit(6)
-
-    purge_unneeded_work_units(data)
 
     # Save the changes to the configuration file.
     saver = Pretty_xml(file_name)
