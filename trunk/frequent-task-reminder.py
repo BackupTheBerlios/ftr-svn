@@ -221,9 +221,6 @@ def create_empty_configuration_file(file_name):
     # Create the future container of tasks.
     SubElement(root, "task-list")
 
-    # Create the future container of work units.
-    SubElement(root, "work-unit-list")
-    
     # Finally write the xml file.
     ElementTree(root).write(file_name, encoding="latin1")
     print "Created empty configuration file '%s'." % file_name
