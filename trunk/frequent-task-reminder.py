@@ -68,22 +68,23 @@ class Pretty_xml(StringIO.StringIO):
 
         TODO: Efficient regular expression substitution. This is ugly.
         """
-        full_string = self.getvalue()
+        s = self.getvalue()
         StringIO.StringIO.close(self)
-        full_string = full_string.replace("frequent-task-reminder>", "frequent-task-reminder>\n")
-        full_string = full_string.replace("<configuration-list />", " <configuration-list />\n")
-        full_string = full_string.replace("<task-list>", "  <task-list>\n")
-        full_string = full_string.replace("<task ", "   <task ")
-        full_string = full_string.replace("><id", ">\n   <id")
-        full_string = full_string.replace("><name", ">\n   <name")
-        full_string = full_string.replace("><starting-day", ">\n   <starting-day")
-        full_string = full_string.replace("><note", ">\n   <note")
-        full_string = full_string.replace("></task>", ">\n  </task>\n")
-        full_string = full_string.replace("><work-unit-list>", ">\n <work-unit-list>")
-        full_string = full_string.replace("/work-unit>", "/work-unit>")
-        full_string = full_string.replace("<work-unit", "\n  <work-unit")
+        s = s.replace("></frequent-task-reminder", ">\n</frequent-task-reminder")
+        s = s.replace("><configuration-list", ">\n <configuration-list")
+        s = s.replace("></configuration-list", ">\n </configuration-list")
+        s = s.replace("><task-list", ">\n <task-list")
+        s = s.replace("></task-list", ">\n </task-list")
+        s = s.replace("><task", ">\n  <task")
+        s = s.replace("></task", ">\n  </task")
+        s = s.replace("><id", ">\n   <id")
+        s = s.replace("><name", ">\n   <name")
+        s = s.replace("><starting-day", ">\n   <starting-day")
+        s = s.replace("><note", ">\n   <note")
+        s = s.replace("><last-unit", ">\n   <last-unit")
+        s = s.replace("", "")
         output_file = open(self.file_name, "wt")
-        output_file.write(full_string)
+        output_file.write(s)
         output_file.close()
 
 
@@ -484,10 +485,9 @@ def main_process(action, action_param, critical, text):
     purge_unneeded_work_units(data)
 
     # Save the changes to the configuration file.
-    #saver = Pretty_xml(file_name)
-    #data.write(saver)
-    #saver.close()
-    data.write(file_name)
+    saver = Pretty_xml(file_name)
+    data.write(saver)
+    saver.close()
 
     # After an action always show the results.
     list_tasks(data, critical)
