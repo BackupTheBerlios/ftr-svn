@@ -482,9 +482,10 @@ def main_process(action, action_param, critical, text):
     purge_unneeded_work_units(data)
 
     # Save the changes to the configuration file.
-    saver = Pretty_xml(file_name)
-    data.write(saver)
-    saver.close()
+    #saver = Pretty_xml(file_name)
+    #data.write(saver)
+    #saver.close()
+    data.write(file_name)
 
     # After an action always show the results.
     list_tasks(data, critical)
