@@ -206,8 +206,8 @@ def process_command_line(argv = None):
 
 
 def get_today():
-    """Returns the string year-mm-dd using today's date."""
-    t = time.localtime()
+    """Returns the string year-mm-dd using today's UTC date."""
+    t = time.gmtime(time.time())
     return "%04d-%02d-%02d" % (t[0], t[1], t[2])
 
 
@@ -230,12 +230,12 @@ def create_empty_configuration_file(file_name):
 
 
 def string_to_seconds(text_string):
-    """Returns a string in format YYYY-MM-DD into seconds since epoch."""
-    return time.mktime(time.strptime(text_string, "%Y-%m-%d"))
+    """Returns UTC string in format YYYY-MM-DD into seconds since epoch."""
+    return time.mktime(time.strptime(text_string, "%Y-%m-%d")) - time.timezone
     
 
 def seconds_to_string(seconds):
-    """Returns a YYYY-MM-DD string for the specified seconds since epoch."""
+    """Returns UTC YYYY-MM-DD string for the specified seconds since epoch."""
     return time.strftime("%Y-%m-%d", time.gmtime(seconds))
     
     
@@ -427,7 +427,7 @@ def advance_task_starting_date(task_node, days):
     date = task_node.find("starting-day")
     date_in_string = date.text
     date_in_seconds = string_to_seconds(date_in_string)
-    date_in_seconds += DAY_IN_SECONDS * days + 60 * 60 * 12
+    date_in_seconds += DAY_IN_SECONDS * days + 60 * 60 * 12 
     date.text = seconds_to_string(date_in_seconds)
     
         
