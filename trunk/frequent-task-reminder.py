@@ -231,7 +231,10 @@ def create_empty_configuration_file(file_name):
 
 def string_to_seconds(text_string):
     """Returns UTC string in format YYYY-MM-DD into seconds since epoch."""
-    return time.mktime(time.strptime(text_string, "%Y-%m-%d")) - time.timezone
+    t = time.strptime(text_string, "%Y-%m-%d")
+    # Set the daylight savings to zero. The default negative is evil.
+    time_tuple = t[0], t[1], t[2], t[3], t[4], t[5], t[6], t[7], 0
+    return time.mktime(time_tuple) - time.timezone
     
 
 def seconds_to_string(seconds):
@@ -360,20 +363,28 @@ def add_work_unit_to_task(tree_root, task_name_or_id):
     """Adds a work unit to the specified task. If the task is not
     active, the operation throws Active_error."""
 
-    # Obtain the task id.
     node = find_task(tree_root, task_name_or_id)
-    task_id = node.find("id").text
 
     # If the task is killed, report it.
     if node.get("killed") == "yes":
         raise Active_error("Task %s is dead, aborting "
             "operation." % task_name_or_id)
 
-    # Create a work-unit for the found task.
-    work_units = tree_root.find("work-unit-list")
-    work_unit = SubElement(work_units, "work-unit")
-    work_unit.set("id", task_id)
-    work_unit.text = get_today()
+    # Convert the last-unit date into UTC seconds.
+    last_unit_node = node.find("last-unit")
+    seconds = string_to_seconds(last_unit_node.text)
+    # Don't forget about the amount value, which works like positive days.
+    amount = int(last_unit_node.get("amount"))
+    if amount > 0:
+        seconds += 1 + amount * DAY_IN_SECONDS
+    else:
+        seconds += DAY_IN_SECONDS
+        
+    # Now replace the current date and reset the amount attribute.
+    new_text_date = seconds_to_string(seconds)
+    assert last_unit_node.text != new_text_date
+    last_unit_node.text = new_text_date
+    last_unit_node.set("amount", "0")
 
 
 def modify_task_note(tree_root, task_name_or_id, text):

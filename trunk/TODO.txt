@@ -20,3 +20,6 @@ Document for command line users.
 Try to modularise and provide independant text and GUI interfaces.
 
 Revision 46 of source code breaks Setedit's python parser.
+
+Verify all XML.find() methods returning real thingies. Raise
+Xml_corrupt_error()?
