@@ -293,21 +293,23 @@ def list_tasks(tree_root, critical):
 
 def add_task(tree_root, task_name):
     """Adds (stripped) task_name to the tree_root."""
+    assert task_name == task_name.strip()
+    assert len(task_name) > 1
 
     # Get a new task id, higher than all previous ones.
     id_num = highest_task_id(tree_root) + 1
     assert id_num >= 0
-
-    # Todo: verify task name. Should be non empty and not numeric only."
 
     # Create the task.
     tasklist = tree_root.find("task-list")
     task = SubElement(tasklist, "task")
     SubElement(task, "id").text = "%d" % id_num
     SubElement(task, "name").text = task_name.strip()
-    SubElement(task, "starting-day").text = get_today()
+    date_today = get_today()
+    SubElement(task, "starting-day").text = date_today
     SubElement(task, "note").text = ""
-    SubElement(task, "keep-unneeded-history").text = "no"
+    last_unit = SubElement(task, "last-unit", attrib = {"amount": "0"})
+    last_unit.text = date_today
 
 
 def highest_task_id(tree_root):
