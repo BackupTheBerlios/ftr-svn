@@ -18,7 +18,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 """
 
 __author__ = "Grzegorz Adam Hankiewicz"
-__date__ =  "$Date$"
+# Can't use SVN's date keyword substitution, breaks stuff.
+__date__ = "Date: 1980-01-01 00:00:00 +0000"
 __version__ = "$Rev$"
 __email__ = "gradha@users.berlios.de"
 __credits__ = ""
