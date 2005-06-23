@@ -37,7 +37,7 @@ dist-log: all
 	$(CP) *.txt *.py dist
 	@# Now generate a changes log.
 	svn update
-	svn log > ChangeLog.txt
+	svn log | fmt > ChangeLog.txt
 	$(CP) ChangeLog.txt dist
 	@# Nice. Now package.
 	$(RM) -fR $(BASENAME) $(BASENAME).tar.bz2
