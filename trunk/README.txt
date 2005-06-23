@@ -54,15 +54,19 @@ Usually you will end up putting this line somewhere in your
 
    path/to/where/you/untarred/this/frequent-task-reminder.py -lc
 
-Contact information
--------------------
+Downloads and contact information
+---------------------------------
 
-You should be able to get me through gradha@users.berlios.de. If
-this fails, try going to my web page (currently at
-http://gradha.sdf-eu.org/), my current email address is stamped at
-the bottom of most pages. If that URL fails, you could try Googling
-by "Grzegorz Adam Hankiewicz" (don't forget the quotes). Am I
-narcissistic or what? As if you ever wanted to know that much...
+The web page for this script is at:
+
+  http://ftr.berlios.de/
+
+BerliOS also provides other services related to this project at:
+
+  http://developer.berlios.de/projects/ftr/
+
+You should be able to email me using gradha@users.berlios.de,
+which is a forwarder to my real email address.
 
 License
 -------
