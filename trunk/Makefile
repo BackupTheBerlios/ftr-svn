@@ -23,6 +23,7 @@ dist: all
 	@# Copy all the interesting files.
 	$(CP) *.txt *.py dist
 	$(CP) ChangeLog.txt dist
+	$(RM) dist/maintenance.txt
 	@# Nice. Now package.
 	$(RM) -fR $(BASENAME) $(BASENAME).tar.bz2
 	mv dist $(BASENAME)
@@ -39,6 +40,7 @@ dist-log: all
 	svn update
 	svn log | fmt > ChangeLog.txt
 	$(CP) ChangeLog.txt dist
+	$(RM) dist/maintenance.txt
 	@# Nice. Now package.
 	$(RM) -fR $(BASENAME) $(BASENAME).tar.bz2
 	mv dist $(BASENAME)
