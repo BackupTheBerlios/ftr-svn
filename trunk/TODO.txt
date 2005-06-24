@@ -10,8 +10,6 @@ Profile Pretty_xml performance.
 
 Be able to list killed task and maybe resurrect them.
 
-Document for command line users.
-
 Try to modularise and provide independant text and GUI interfaces.
 
 Revision 46 of source code breaks Setedit's python parser.

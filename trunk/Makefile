@@ -10,7 +10,7 @@ all:
 clean:
 	@echo So fresh and so clean!
 
-doc:
+docs:
 	$(FORMATTER_HTML) $(FORMATTER_HTML_OPTIONS) README.txt > README.html
 
 H_VERSION = $(shell grep ^HUMAN frequent-task-reminder.py | awk -F \" '{print $$2}')
