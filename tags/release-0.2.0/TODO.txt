@@ -1,0 +1,18 @@
+Add verbose or debug option.
+
+Add -C config_file switch. This will allow creating a unit test
+for adding/removing operations and stuff.
+
+Add frequency attribute to task, to be allow to specify work unit
+frequencies other than single days.
+
+Profile Pretty_xml performance.
+
+Be able to list killed task and maybe resurrect them.
+
+Try to modularise and provide independant text and GUI interfaces.
+
+Revision 46 of source code breaks Setedit's python parser.
+
+Verify all XML.find() methods returning real thingies. Raise
+Xml_corrupt_error()?

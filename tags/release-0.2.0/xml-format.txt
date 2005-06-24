@@ -1,0 +1,100 @@
+This should document the XML format saved by the application (like
+a poor man's DTD). This is incompatible with versions previous
+to 0.2.0:
+
+
+Node: frequent-task-reminder (mandatory)
+
+ Root of the configuration. Anything outside of this should be
+ ignored.
+
+ Attributes: None.
+
+ Children: configuration-list, task-list.
+ 
+
+Node: configuration-list
+
+ List of configuration options for the program.
+
+ Attributes: None.
+
+ Children: ?
+ 
+
+Node: task-list
+
+ List of tasks the user has scheduled. Can be empty.
+
+ Attributes: None.
+
+ Children: task.
+
+
+Node: task
+
+ Individual task node. This is really a container
+
+ Attributes: None.
+
+ Chilren: id, name, starting-day, note, last-unit
+
+
+Node: id (mandatory)
+
+ Numeric positive integer specifying the id of the task.
+
+ Attributes: None.
+
+ Children: None.
+ 
+
+Node: name (mandatory)
+
+ User specified block of text.
+
+ Attributes: None.
+
+ Children: None.
+ 
+
+Node: starting-day (mandatory)
+
+ UTC day when the work units start being counted. Format of the
+ date string is YYYY-MM-DD.
+
+ Attributes: None.
+
+ Children: None.
+
+
+Node: note
+
+ Optional user specified block of text for the task.
+
+ Attributes: None.
+
+ Children: None.
+
+
+Node: last-unit (mandatory)
+
+ UTC day of the last performed unit. Same format as
+ starting-day. Note the attribute "amount" to know exactly if the
+ specified day is over or not. The "amount" attribute is an integer
+ from zero to +infinite. This attribute specifies how many work
+ units have been done the specified day.
+
+ The attribute is necessary to know if a recently started task has
+ had its work units done. If the starting-day and last-unit dates
+ are equal, and the attribute is zero, no work units have been
+ done. On the other hand, if the attribute is one, the meaning is
+ equal to having a last-unit date of starting-day plus one, with
+ an attribute of zero. The following two are equivalent:
+
+  <starting-day>2005-06-17</starting-day>
+  <last-unit amount="1">2005-06-17</last-unit>
+
+  <starting-day>2005-06-17</starting-day>
+  <last-unit amount="0">2005-06-18</last-unit>
+
