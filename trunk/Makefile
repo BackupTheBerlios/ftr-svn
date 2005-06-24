@@ -2,20 +2,22 @@ CP=cp
 RM=rm
 FORMATTER_HTML=rest2html
 FORMATTER_HTML_OPTIONS=--embed-stylesheet --stylesheet-path /usr/share/python-docutils/default.css
+H_VERSION = $(shell grep ^HUMAN frequent-task-reminder.py | awk -F \" '{print $$2}')
+# "
+BASENAME = frequent-task-reminder
+VERNAME = $(BASENAME)_$(H_VERSION)
 
 .PHONY: all dist clean doc
 
 all:
 
 clean:
+	$(RM) -fR $(BASENAME)_*.*.*
+	$(RM) *.pyc *.html ChangeLog.txt
 	@echo So fresh and so clean!
 
 docs:
 	$(FORMATTER_HTML) $(FORMATTER_HTML_OPTIONS) README.txt > README.html
-
-H_VERSION = $(shell grep ^HUMAN frequent-task-reminder.py | awk -F \" '{print $$2}')
-# "
-BASENAME = frequent-task-reminder_$(H_VERSION)
 
 dist: all
 	$(RM) -fR dist
@@ -25,10 +27,10 @@ dist: all
 	$(CP) ChangeLog.txt dist
 	$(RM) dist/maintenance.txt
 	@# Nice. Now package.
-	$(RM) -fR $(BASENAME) $(BASENAME).tar.bz2
-	mv dist $(BASENAME)
-	arcdir -t tar.bz2 $(BASENAME)
-	$(RM) -fR $(BASENAME)
+	$(RM) -fR $(VERNAME) $(VERNAME).tar.bz2
+	mv dist $(VERNAME)
+	arcdir -t tar.bz2 $(VERNAME)
+	$(RM) -fR $(VERNAME)
 	@echo Done!
 
 dist-log: all
@@ -42,10 +44,10 @@ dist-log: all
 	$(CP) ChangeLog.txt dist
 	$(RM) dist/maintenance.txt
 	@# Nice. Now package.
-	$(RM) -fR $(BASENAME) $(BASENAME).tar.bz2
-	mv dist $(BASENAME)
-	arcdir -t tar.bz2 $(BASENAME)
-	$(RM) -fR $(BASENAME)
+	$(RM) -fR $(VERNAME) $(VERNAME).tar.bz2
+	mv dist $(VERNAME)
+	arcdir -t tar.bz2 $(VERNAME)
+	$(RM) -fR $(VERNAME)
 	@echo Done!
         
 
