@@ -12,6 +12,24 @@ you of some task you otherwise manage to ignore. This program will
 remind you of those boring tasks. Every day. In fact, every time
 you run it.
 
+Ouch, that's not what I'm looking for
+-------------------------------------
+
+That's a shame. Maybe you are looking for task/todo tracking software
+with a focus on something else? In that case, stop reading this and
+head to http://freshmeat.net/. If you search for the word *task*
+you will find many projects. Some of them may be of use to you.
+
+Performing this little search I found the program
+http://freshmeat.net/projects/ntodo/.  The main difference is that
+it is a GUI only program and it doesn't seem to work for repeated
+tasks, so you would have to create the same daily tasks every day.
+
+It's mainly for that reason that I wrote this program, most task
+tracking software is focused on one time tasks which are not to be
+repeated. Anyway, judge yourself, and never stop looking for the
+perfect piece of software!
+
 How does it work?
 -----------------
 
@@ -112,6 +130,13 @@ BerliOS also provides other services related to this project at:
 
 You should be able to email me using gradha@users.berlios.de,
 which is a forwarder to my real email address.
+
+The future
+----------
+
+At the moment this is just text UI. GUI interfaces should come
+sooner or later. If you want to, take a look at the TODO.txt file
+that comes with the package, that's what I'm planning to fix.
 
 License
 -------
