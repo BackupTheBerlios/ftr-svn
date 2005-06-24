@@ -100,11 +100,15 @@ Downloads and contact information
 
 The web page for this script is at:
 
-  http://ftr.berlios.de/
+   http://ftr.berlios.de/
+
+Releases can be downloaded from:
+
+   http://developer.berlios.de/project/showfiles.php?group_id=4008
 
 BerliOS also provides other services related to this project at:
 
-  http://developer.berlios.de/projects/ftr/
+   http://developer.berlios.de/projects/ftr/
 
 You should be able to email me using gradha@users.berlios.de,
 which is a forwarder to my real email address.
