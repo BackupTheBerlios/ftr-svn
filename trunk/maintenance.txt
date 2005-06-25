@@ -24,3 +24,5 @@ How to make a release:
  7) Add the BerliOS logo to the web page.
 
  8) Add the release URL to the web page.
+
+ 9) Announce release on freshmeat.
