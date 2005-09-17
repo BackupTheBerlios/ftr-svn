@@ -122,7 +122,7 @@ specify more than one action at the same time. Usage examples:
 
  %s --list -c
  %s -a "Water the binary trees."
- %s -kill 3
+ %s --kill 3
  %s -wc "Check http://gradha.sdf-eu.org/ for updates."
  %s -n "Water the binary trees." That was a joke
  %s --note 4
