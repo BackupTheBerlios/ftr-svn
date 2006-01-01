@@ -104,6 +104,8 @@ Commands:
         Marks task `x' (id or name) as dead.
     -w x, --work x
         Adds one work unit to the task id/name `x'.
+    -r x, --reset x
+        Resets all pending work units on id/name `x'.
     -n x text, --note x text
         Modifies the task id/name `x' to have the note `text'. If
         there is no `text', the previous note will be erased.
@@ -153,9 +155,9 @@ def process_command_line(argv = None):
     if not argv:
         argv = sys.argv
  
-    short_list = "hvla:k:w:cn:"
+    short_list = "hvla:k:w:cn:r:"
     long_list = ["help", "version", "list", "add=", "kill=", "work=",
-        "critical", "note="]
+        "critical", "note=", "reset="]
 
     try:
         opts, args = getopt.getopt(argv[1:], short_list, long_list)
@@ -196,6 +198,9 @@ def process_command_line(argv = None):
         elif option in ("-n", "--note"):
             exit_if_action_is_defined(action)
             action, action_param = "note", value
+        elif option in ("-r", "--reset"):
+            exit_if_action_is_defined(action)
+            action, action_param = "reset", value
         elif option in ("-c", "--critical"):
             critical = 1
  
@@ -342,9 +347,10 @@ def find_task(tree_root, task_name_or_id):
 
     
 def add_work_unit_to_task(tree_root, task_name_or_id):
-    """Adds a work unit to the specified task. If the task is not
-    active, the operation throws Active_error."""
+    """Adds a work unit to the specified task.
 
+    If the task is not active, the operation throws Active_error.
+    """
     node = find_task(tree_root, task_name_or_id)
 
     # If the task is killed, report it.
@@ -367,6 +373,15 @@ def add_work_unit_to_task(tree_root, task_name_or_id):
     assert last_unit_node.text != new_text_date
     last_unit_node.text = new_text_date
     last_unit_node.set("amount", "0")
+
+
+def reset_task(tree_root, task_name_or_id):
+    """Clears all the work units of the task."""
+    node = find_task(tree_root, task_name_or_id)
+
+    last_unit_node = node.find("last-unit")
+    last_unit_node.text = get_today()
+    last_unit_node.set("amount", "1")
 
 
 def modify_task_note(tree_root, task_name_or_id, text):
@@ -432,10 +447,11 @@ def get_task_units_done(task_node):
 def main_process(action, action_param, critical, text):
     """Does the main task of running the program.
 
-    Action is a string of: list, add, kill, work, note. action_param
-    is the related parameter to the action. If critical is true,
-    only actions that have pending work units will be displayed in
-    the output. text is the optional text used in the note command.
+    Action is a string from: list, add, kill, work, note,
+    reset. action_param is the related parameter to the action. If
+    critical is true, only actions that have pending work units will
+    be displayed in the output. text is the optional text used in
+    the note command.
     """
     file_name = os.path.expanduser("~/.frequent-task-reminderrc")
     if not os.path.isfile(file_name):
@@ -457,6 +473,8 @@ def main_process(action, action_param, critical, text):
             add_work_unit_to_task(data, action_param)
         elif "note" == action:
             modify_task_note(data, action_param, text)
+        elif "reset" == action:
+            reset_task(data, action_param)
         else:
             print "Unknown action '%s', params '%s'" % (action, action_param)
             sys.exit(4)
