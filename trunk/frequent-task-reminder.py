@@ -25,16 +25,22 @@ __email__ = "gradha@users.berlios.de"
 __credits__ = ""
 
 
-# Modules to be imported.
+# Modules to be imported. First try C version, then python on.
 try:
-    from elementtree.ElementTree import Element
-    from elementtree.ElementTree import ElementTree
-    from elementtree.ElementTree import SubElement
+    import cElementTree2
+    Element = cElementTree.Element
+    ElementTree = cElementTree.ElementTree
+    ElementSubElement = cElementTree.SubElement
 except ImportError:
-    print "Oooops! Couldn't import the elementtree python package."
-    print "You can download and install it from http://effbot.org/zone/element-index.htm"
-    print
-    raise
+    try:
+        from elementtree.ElementTree import Element
+        from elementtree.ElementTree import ElementTree
+        from elementtree.ElementTree import SubElement
+    except ImportError:
+        print "Oooops! Couldn't import the elementtree python package."
+        print "You can download and install it from http://effbot.org/zone/element-index.htm"
+        print
+        raise
 import os
 import StringIO
 import sys
