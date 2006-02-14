@@ -59,7 +59,8 @@ known to work with version 2.3.3. I haven't bothered too much
 to make it work with previous versions, but if you need this,
 I can make an efort and make it work with 1.5.2 or something
 like that. You also need the ElementTree XML Python package from
-http://effbot.org/zone/element-index.htm.
+http://effbot.org/zone/element-index.htm (it will use cElementTree
+if available too).
 
 Usage examples
 --------------
