@@ -1,3 +1,5 @@
+Add human readable changelog, from 0.1.0 (use viewsvn?).
+
 Add verbose or debug option.
 
 Add -C config_file switch. This will allow creating a unit test
