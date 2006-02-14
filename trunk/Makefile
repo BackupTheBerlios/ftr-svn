@@ -1,7 +1,7 @@
 CP=cp
 RM=rm
 FORMATTER_HTML=rest2html
-FORMATTER_HTML_OPTIONS=--embed-stylesheet --stylesheet-path /usr/share/python-docutils/default.css
+FORMATTER_HTML_OPTIONS=--embed-stylesheet --stylesheet-path /usr/share/python-docutils/stylesheets/default.css
 H_VERSION = $(shell grep ^HUMAN frequent-task-reminder.py | awk -F \" '{print $$2}')
 # "
 BASENAME = frequent-task-reminder
