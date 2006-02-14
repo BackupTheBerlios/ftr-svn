@@ -1,0 +1,15 @@
+Right now... there is no install!
+
+Sorry. This program is still too contained in a single file to have
+a proper installation. In fact, the only things you really need are
+Python (http://www.python.org/) and the ElementTree Python package
+used for XML (http://effbot.org/zone/element-index.htm).
+
+So, install Python, install ElementTree (comes with a setup.py you
+can run) and then just run this script from wherever you like. You
+might want to copy this file to your ~/bin (or /usr/local/bin if
+you have more than one user).
+
+Correct installation procedures are planned after the split of this
+script into a logical module with external interfaces (commandline
+and GUI).

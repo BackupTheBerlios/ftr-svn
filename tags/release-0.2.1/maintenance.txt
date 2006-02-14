@@ -1,0 +1,28 @@
+This document is for developers, those who have svn write access. If
+you are not in this group, you can safely ignore the rest of it.
+
+
+How to make a release:
+
+ 1) Bump human version inside frequent-task-reminder.py.
+
+ 2) Bump human version inside README.txt.
+
+ 3) Commit.
+
+ 4) Annotate revision number and create tag:
+
+  svn copy -r revision_number \
+        svn+ssh://svn.berlios.de/svnroot/repos/ftr/trunk \
+        svn+ssh://svn.berlios.de/svnroot/repos/ftr/tags/release-x.y.z \
+        -m "Release x.y.z."
+
+ 5) Generate dist release and upload to BerliOS.
+
+ 6) Generate rest documentation and copy/paste over web page.
+
+ 7) Add the BerliOS logo to the web page.
+
+ 8) Add the release URL to the web page.
+
+ 9) Announce release on freshmeat.
