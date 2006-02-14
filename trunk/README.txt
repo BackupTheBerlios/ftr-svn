@@ -1,4 +1,4 @@
-frequent-task-reminder 0.2.0
+frequent-task-reminder 0.2.1
 ============================
 
 Scenario description
