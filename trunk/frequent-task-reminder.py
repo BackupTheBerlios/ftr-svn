@@ -38,7 +38,8 @@ except ImportError:
         from elementtree.ElementTree import SubElement
     except ImportError:
         print "Oooops! Couldn't import the elementtree python package."
-        print "You can download and install it from http://effbot.org/zone/element-index.htm"
+        print "You can download and install it from http://effbot.org/zone/element-index.htm."
+        print "Under Debian you can also `apt-get install python-elementtree'."
         print
         raise
 import os
